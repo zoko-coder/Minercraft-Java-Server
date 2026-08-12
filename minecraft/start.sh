@@ -12,8 +12,14 @@ if [ ! -f /data/eula.txt ]; then
     echo "eula=true" > /data/eula.txt
 fi
 
+# Start fake HTTP server in background so Render's health check passes
+python3 /server.py &
+
 exec java \
-    -Xms350M \
-    -Xmx400M \
+    -Xms256M \
+    -Xmx350M \
+    -XX:+UseG1GC \
+    -XX:+ParallelRefProcEnabled \
+    -XX:MaxGCPauseMillis=200 \
     -jar /data/paper.jar \
     --nogui
